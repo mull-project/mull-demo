@@ -18,6 +18,9 @@ jobs:
       - name: Install prerequisites
         run: apt-get update && apt-get install -y curl ca-certificates git clang-22
 
+      - name: Mark workspace as safe for git
+        run: git config --global --add safe.directory ${{ github.workspace }}
+
       - uses: actions/checkout@v4
 
       - name: Install mull from nightly
@@ -43,6 +46,6 @@ jobs:
             range_tests
 
       - name: Upload SARIF to Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: mull-report.sarif
