@@ -38,6 +38,7 @@ jobs:
             --reporters GitHubAnnotations \
             --reporters Sarif \
             --report-name mull-report \
+            --report-patch-base ${{ github.workspace }} \
             --allow-surviving \
             range_tests
 
