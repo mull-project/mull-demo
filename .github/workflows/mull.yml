@@ -1,0 +1,47 @@
+name: Mutation Testing
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  security-events: write
+
+jobs:
+  mutation-testing:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:26.04
+    steps:
+      - name: Install prerequisites
+        run: apt-get update && apt-get install -y curl ca-certificates git clang-22
+
+      - uses: actions/checkout@v4
+
+      - name: Install mull from nightly
+        run: |
+          curl -1sLf 'https://dl.cloudsmith.io/public/mull-project/mull-nightly/setup.deb.sh' | bash
+          apt-get install -y mull-22
+
+      - name: Build range_tests
+        run: |
+          clang-22 \
+            -fpass-plugin=/usr/lib/mull-ir-frontend-22 \
+            -g -grecord-command-line \
+            main.c -o range_tests
+
+      - name: Run mull
+        run: |
+          mull-runner-22 \
+            --reporters GitHubAnnotations \
+            --reporters SARIF \
+            --report-name mull-report \
+            --allow-surviving \
+            range_tests
+
+      - name: Upload SARIF to Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: mull-report.sarif
