@@ -4,7 +4,7 @@ A minimal demo of [Mull](https://mull-project.com) mutation testing, based on th
 
 ## What this project does
 
-`main.c` implements a (buggy) `in_range` function that checks whether a value falls within a closed interval `[min, max]`, along with three assertions that serve as its test suite:
+`range_tests.c` implements a (buggy) `in_range` function that checks whether a value falls within a closed interval `[min, max]`, along with three assertions that serve as its test suite:
 
 ```c
 int in_range(int value, int min, int max) {
@@ -27,7 +27,7 @@ Install mull (see [installation docs](https://mull-project.com/getting-started/i
 clang-22 \
   -fpass-plugin=/usr/lib/mull-ir-frontend-22 \
   -g -grecord-command-line \
-  main.c -o range_tests
+  range_tests.c -o range_tests
 
 mull-runner-22 range_tests
 ```

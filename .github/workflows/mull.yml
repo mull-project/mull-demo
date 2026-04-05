@@ -36,7 +36,7 @@ jobs:
           clang-22 \
             -fpass-plugin=/usr/lib/mull-ir-frontend-22 \
             -g -grecord-command-line \
-            main.c -o range_tests
+            range_tests.c -o range_tests
 
       - name: Run mull
         run: |
