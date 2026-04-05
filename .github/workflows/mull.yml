@@ -9,6 +9,9 @@ on:
 permissions:
   security-events: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   mutation-testing:
     runs-on: ubuntu-latest
@@ -17,6 +20,9 @@ jobs:
     steps:
       - name: Install prerequisites
         run: apt-get update && apt-get install -y curl ca-certificates git clang-22
+
+      - name: Mark workspace as safe for git
+        run: git config --global --add safe.directory '*'
 
       - uses: actions/checkout@v4
 
@@ -30,7 +36,7 @@ jobs:
           clang-22 \
             -fpass-plugin=/usr/lib/mull-ir-frontend-22 \
             -g -grecord-command-line \
-            main.c -o range_tests
+            range_tests.c -o range_tests
 
       - name: Run mull
         run: |
@@ -38,10 +44,17 @@ jobs:
             --reporters GitHubAnnotations \
             --reporters Sarif \
             --report-name mull-report \
+            --report-patch-base $(realpath .) \
             --allow-surviving \
             range_tests
 
+      - name: Upload SARIF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mull-report
+          path: mull-report.sarif
+
       - name: Upload SARIF to Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: mull-report.sarif
