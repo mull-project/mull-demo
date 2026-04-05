@@ -36,7 +36,7 @@ jobs:
         run: |
           mull-runner-22 \
             --reporters GitHubAnnotations \
-            --reporters SARIF \
+            --reporters Sarif \
             --report-name mull-report \
             --allow-surviving \
             range_tests
